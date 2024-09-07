@@ -7,7 +7,7 @@ on:
 
 env:
   REGISTRY: ghcr.io
-  IMAGE_NAME: mooniegz/pfq-tools
+  IMAGE_NAME: mooniegz/website
 
 jobs:
   build_and_push:
