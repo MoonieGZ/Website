@@ -7,6 +7,7 @@ import { Card, CardContent } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { Search } from "lucide-react"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import Cookies from "js-cookie"
 import Image from "next/image"
 import Link from "next/link"
@@ -29,6 +30,14 @@ type OwnedPokemon = {
   color: string
 }
 
+const variants = ['normal', 'shiny', 'albino', 'melanistic'];
+
+const natures = [
+  "All", "Adamant", "Bashful", "Bold", "Brave", "Calm", "Careful", "Docile", "Gentle", "Hardy",
+  "Hasty", "Impish", "Jolly", "Lax", "Lonely", "Mild", "Modest", "Naive", "Naughty",
+  "Quiet", "Quirky", "Rash", "Relaxed", "Sassy", "Serious", "Timid"
+]
+
 const fetchPokedexData = async (token: string): Promise<Region[]> => {
   const response = await fetch("https://api.pokefarm.com/dex", {
     headers: {
@@ -44,8 +53,10 @@ const fetchPokedexData = async (token: string): Promise<Region[]> => {
   return response.json()
 }
 
-const fetchOwnedPokemon = async (token: string, username: string): Promise<OwnedPokemon[]> => {
-  const response = await fetch(`https://api.pokefarm.com/pokemon?username=${username}`, {
+const fetchOwnedPokemon = async (token: string, username: string, nature: string): Promise<OwnedPokemon[]> => {
+  const url = `https://api.pokefarm.com/pokemon?username=${username}&nature=${nature.toLowerCase()}`;
+  console.log('url: ' + url)
+  const response = await fetch(url, {
     headers: {
       Authorization: `${token}`,
       'Content-Type': 'application/json',
@@ -53,7 +64,7 @@ const fetchOwnedPokemon = async (token: string, username: string): Promise<Owned
   })
 
   if (!response.ok) {
-    throw new Error("Failed to fetch owned Pokémon data")
+    throw new Error("Failed to fetch owned Pokémon data.")
   }
 
   return response.json()
@@ -78,7 +89,14 @@ function generateShortLink(id: number) {
   return ret;
 }
 
-const variants = ['normal', 'shiny', 'albino', 'melanistic'];
+function cleanFormeName(formename: string) {
+  return formename
+    .replace(" Forme", "")
+    .replace(" Flower", "")
+    .replace(" Pattern", "")
+    .replace(" Drive", "")
+    .replace("Type: ", "");
+}
 
 const PokemonCard = ({ pokemon, isHighlighted, ownedVariants }: { 
   pokemon: Pokemon; 
@@ -95,7 +113,7 @@ const PokemonCard = ({ pokemon, isHighlighted, ownedVariants }: {
           height={32}
         />
         <div className="flex-1 text-left pl-2">
-          <span className="text-base font-medium">{pokemon.name} {pokemon.formename && ` [${pokemon.formename.replace(" Forme", "").replace(" Flower", "")}]`}</span>
+          <span className="text-base font-medium">{pokemon.name} {pokemon.formename && ` [${cleanFormeName(pokemon.formename)}]`}</span>
         </div>
 
         <div className="flex items-center space-x-2">
@@ -135,6 +153,7 @@ export default function Pokedex() {
   const [error, setError] = useState("")
   const [searchTerm, setSearchTerm] = useState("")
   const [highlightedPokemon, setHighlightedPokemon] = useState<string | null>(null)
+  const [selectedNature, setSelectedNature] = useState(Cookies.get("pref_nature") || "All")
 
   const router = useRouter()
 
@@ -153,7 +172,7 @@ export default function Pokedex() {
       try {
         const [pokedexData, ownedPokemonData] = await Promise.all([
           fetchPokedexData(token),
-          fetchOwnedPokemon(token, username)
+          fetchOwnedPokemon(token, username, selectedNature)
         ])
 
         const sortedData = pokedexData.sort((a, b) => {
@@ -165,14 +184,14 @@ export default function Pokedex() {
         setPokedexData(sortedData)
         setOwnedPokemon(ownedPokemonData)
       } catch (err) {
-        setError("Failed to load data. Please try logging in again.")
+        setError("Failed to load data.\n" + err)
       } finally {
         setIsLoading(false)
       }
     }
 
     loadData()
-  }, [router])
+  }, [router, selectedNature])
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault()
@@ -201,13 +220,19 @@ export default function Pokedex() {
               setHighlightedPokemon(null)
             }, 3000)
           }
-        }, 350)
+        }, 500)
 
         return
       }
     }
 
     alert("Pokémon not found!")
+  }
+
+  const handleNatureChange = (nature: string) => {
+    setSelectedNature(nature)
+    Cookies.set("pref_nature", nature, { expires: 365 })
+    window.location.reload()
   }
 
   const getOwnedVariants = (formeid: string): { [key: string]: number } => {
@@ -232,7 +257,20 @@ export default function Pokedex() {
     <>
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-3xl font-bold">PokéDex</h1>
-        <form onSubmit={handleSearch} className="flex gap-2">
+        <div className="flex-grow"></div> {/* Filler space */}
+        <Select value={selectedNature} onValueChange={handleNatureChange}>
+          <SelectTrigger className="w-[180px]">
+            <SelectValue placeholder="Select nature" />
+          </SelectTrigger>
+          <SelectContent>
+            {natures.map((nature) => (
+              <SelectItem key={nature} value={nature}>
+                {nature}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+        <form onSubmit={handleSearch} className="flex gap-2 ml-4">
           <Input
             type="text"
             placeholder="Search Pokémon"
@@ -244,7 +282,6 @@ export default function Pokedex() {
             <Search className="h-4 w-4" />
           </Button>
         </form>
-        
       </div>
 
       <Accordion type="single" collapsible className="w-full">

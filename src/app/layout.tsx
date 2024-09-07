@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 import Link from 'next/link'
 import { Inter } from 'next/font/google'
-import { Twitch, Music2, MessageCircle } from 'lucide-react'
+import { MessageCircle, Music2, MoonStar, Video } from 'lucide-react'
 
 export const metadata: Metadata = {
   title: "Moons' Tools",
@@ -17,14 +17,19 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="en" className="dark">
       <body className={`${inter.className} bg-gray-900 text-gray-100 min-h-screen flex flex-col`}>
         <nav className="bg-gray-800 p-4">
-          <div className="container mx-auto flex justify-between items-center">
-            <Link href="/" className="text-xl font-bold">Moons&apos; Tools</Link>
+          <div className="container mx-auto flex items-center">
+            <MoonStar />
+            <Link href="/" className="ml-4 text-xl font-bold">
+              Moons&apos; Tools
+            </Link>
+            <div className="flex-grow"></div> {/* Filler space */}
             <div className="space-x-4">
               <Link href="/" className="hover:text-gray-300">Home</Link>
               <Link href="/pokedex" className="hover:text-gray-300">PokéDex</Link>
               <Link href="/about" className="hover:text-gray-300">About</Link>
             </div>
           </div>
+
         </nav>
         <main className="flex-grow container mx-auto px-4 sm:px-6 lg:px-8 py-8">
           {children}
@@ -37,7 +42,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               </div>
               <div className="flex space-x-6">
                 <a href="https://twitch.tv/ilymoonsy" target="_blank" rel="noopener noreferrer" className="hover:text-purple-400">
-                  <Twitch className="h-6 w-6" />
+                  <Video className="h-6 w-6" />
                   <span className="sr-only">Twitch</span>
                 </a>
                 <a href="https://tiktok.com/@ilyMoonsy" target="_blank" rel="noopener noreferrer" className="hover:text-pink-400">
