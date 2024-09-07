@@ -19,7 +19,7 @@ COPY next.config.mjs .
 COPY tsconfig.json .
 COPY components.json .
 COPY postcss.config.js .
-COPY tailwind.config.js .
+COPY tailwind.config.ts .
 
 ARG ENV_VARIABLE
 ENV ENV_VARIABLE=${ENV_VARIABLE}
