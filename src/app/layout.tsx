@@ -41,17 +41,17 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                 <p>&copy; {currentYear} Moons. All rights reserved.</p>
               </div>
               <div className="flex space-x-6">
-                <a href="https://twitch.tv/ilyMoonsy" target="_blank" rel="noopener noreferrer" className="hover:text-purple-400">
-                  <Video className="h-6 w-6" />
-                  <span className="sr-only">Twitch</span>
+                <a href="https://discord.gg/cKybQqnBK9" target="_blank" rel="noopener noreferrer" className="hover:text-blue-400">
+                  <MessageCircle className="h-6 w-6" />
+                  <span className="sr-only">Discord</span>
                 </a>
                 <a href="https://tiktok.com/@ilyMoonsy" target="_blank" rel="noopener noreferrer" className="hover:text-pink-400">
                   <Music2 className="h-6 w-6" />
                   <span className="sr-only">TikTok</span>
                 </a>
-                <a href="https://discord.gg/cKybQqnBK9" target="_blank" rel="noopener noreferrer" className="hover:text-blue-400">
-                  <MessageCircle className="h-6 w-6" />
-                  <span className="sr-only">Discord</span>
+                <a href="https://twitch.tv/ilyMoonsy" target="_blank" rel="noopener noreferrer" className="hover:text-purple-400">
+                  <Video className="h-6 w-6" />
+                  <span className="sr-only">Twitch</span>
                 </a>
               </div>
             </div>
