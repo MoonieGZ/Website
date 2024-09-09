@@ -15,7 +15,7 @@ const currentYear = new Date().getFullYear()
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <PlausibleProvider domain="mnsy.dev" customDomain="staryu.pokefarm.com" selfHosted>
+    <PlausibleProvider domain="mnsy.dev" customDomain="https://staryu.pokefarm.com" selfHosted>
       <html lang="en" className="dark">
         <body className={`${inter.className} bg-gray-900 text-gray-100 min-h-screen flex flex-col`}>
           <nav className="bg-gray-800 p-4">
