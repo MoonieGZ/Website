@@ -2,13 +2,13 @@
 
 import { useState, useEffect, useRef } from "react"
 import { useRouter } from "next/navigation"
-import { Search, Settings, HelpCircle } from "lucide-react"
+import { Search, HelpCircle, Filter, LogOut, Info } from "lucide-react"
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
 import { Card, CardContent } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { Checkbox } from "@/components/ui/checkbox"
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
+import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
 import { Pokemon, OwnedPokemon, Region, UserSettings } from "./types"
 import { BerryPreferences, BerryToNatureMap, Natures, PokemonTypes, Variants } from "./pkmnVars"
@@ -65,6 +65,78 @@ const PokemonCard = ({ pokemon, isHighlighted, ownedVariants }: {
   </Card>
 )
 
+const clearCookiesAndReload = () => {
+  Cookies.remove("token")
+  Cookies.remove("pokedex_settings")
+  window.location.reload()
+}
+
+const LogoutConfirmationDialog = ({ isOpen, onClose, onConfirm }: { isOpen: boolean, onClose: () => void, onConfirm: () => void }) => {
+  return (
+    <Dialog open={isOpen} onOpenChange={onClose}>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>Confirm Logout</DialogTitle>
+        </DialogHeader>
+        <p>Are you sure you want to log out?<br />This will clear your cookies and reload the page.</p>
+        <DialogFooter>
+          <Button variant="outline" onClick={onClose}>No</Button>
+          <Button variant="destructive" onClick={onConfirm}>Yes</Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  )
+}
+
+const InfoDialog = () => {
+  const [isOpen, setIsOpen] = useState(false)
+
+  return (
+    <Dialog open={isOpen} onOpenChange={setIsOpen}>
+      <DialogTrigger asChild>
+        <Button variant="secondary" className="ml-2">
+          <Info className="h-4 w-4" />
+        </Button>
+      </DialogTrigger>
+      <DialogContent className="sm:max-w-[725px]">
+        <DialogHeader>
+          <DialogTitle>About this page</DialogTitle>
+        </DialogHeader>
+        <div className="space-y-4">
+          <section>
+            <h3 className="font-semibold mb-2">Description</h3>
+            <p>
+              This tool is designed as a Living Dex on PokéFarm Q. It is a visual representation of the Pokédex, showing all Pokémon and their forms.
+            </p>
+            <br />
+            <p>
+              It also shows which Pokémon you own, and which variants you own, based on your live data from PFQ.
+            </p>
+            <br />
+            <p>
+              Via the filter icon, you have the ability to filter by nature, berry preferences, and Pokémon types.
+            </p>
+            <br />
+            <p>
+              You can also search for a specific Pokémon by name.
+            </p>
+          </section>
+          <section>
+            <h3 className="font-semibold mb-2">Known Issues</h3>
+            <ul className="list-disc pl-5 space-y-1">
+              <li>Ordering by dex number is not possible.</li>
+              <li>There are Pokémon other than the Ralts lines displayed.</li>
+            </ul>
+          </section>
+        </div>
+        <DialogFooter>
+          <Button onClick={() => setIsOpen(false)}>Close</Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  )
+}
+
 const SettingsDialog = ({ settings, onSettingsChange }: { settings: UserSettings, onSettingsChange: (newSettings: UserSettings) => void }) => {
   const [localSettings, setLocalSettings] = useState<UserSettings>(settings)
   const [open, setOpen] = useState(false)
@@ -112,8 +184,8 @@ const SettingsDialog = ({ settings, onSettingsChange }: { settings: UserSettings
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button variant="outline" size="icon">
-          <Settings className="h-4 w-4" />
+        <Button variant="secondary">
+          <Filter className="h-4 w-4" />
         </Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">
@@ -205,6 +277,7 @@ export default function Pokedex() {
       pokemonTypes: []
     }
   })
+  const [isLogoutDialogOpen, setIsLogoutDialogOpen] = useState(false)
 
   const router = useRouter()
 
@@ -213,8 +286,7 @@ export default function Pokedex() {
 
   useEffect(() => {
     const token = Cookies.get("token")
-    const username = Cookies.get("username")
-    if (!token || !username) {
+    if (!token) {
       router.push("/login")
       return
     }
@@ -223,7 +295,7 @@ export default function Pokedex() {
       try {
         const [pokedexData, ownedPokemonData] = await Promise.all([
           fetchPokedexData(token, settings),
-          fetchOwnedPokemon(token, username, settings)
+          fetchOwnedPokemon(token, settings)
         ])
 
         const sortedData = pokedexData.sort((a, b) => {
@@ -309,13 +381,6 @@ export default function Pokedex() {
     return activeFilters.length > 0 ? activeFilters.join(' | ') : 'No filters applied.'
   }
 
-  const clearCookiesAndReload = () => {
-    Cookies.remove("token")
-    Cookies.remove("username")
-    Cookies.remove("pokedex_settings")
-    window.location.reload()
-  }
-
   if (isLoading) {
     return <div className="text-center">Loading PokéDex data...</div>
   }
@@ -336,8 +401,8 @@ export default function Pokedex() {
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-3xl font-bold">PokéDex</h1>
         <div className="flex-grow"></div>
-        <SettingsDialog settings={settings} onSettingsChange={handleSettingsChange} />
-        <form onSubmit={handleSearch} className="flex gap-2 ml-4">
+        
+        <form onSubmit={handleSearch} className="flex gap-2 mr-2">
           <Input
             type="text"
             placeholder="Search Pokémon"
@@ -345,10 +410,20 @@ export default function Pokedex() {
             onChange={(e) => setSearchTerm(e.target.value)}
             className="flex-grow"
           />
-          <Button type="submit">
+          <Button variant="secondary" type="submit">
             <Search className="h-4 w-4" />
           </Button>
         </form>
+        <SettingsDialog settings={settings} onSettingsChange={handleSettingsChange} />
+        <InfoDialog />
+        <Button variant="destructive" onClick={() => setIsLogoutDialogOpen(true)} className="ml-2">
+          <LogOut className="h-4 w-4" />
+        </Button>
+        <LogoutConfirmationDialog
+          isOpen={isLogoutDialogOpen}
+          onClose={() => setIsLogoutDialogOpen(false)}
+          onConfirm={clearCookiesAndReload}
+        />
       </div>
 
       <Accordion type="single" collapsible className="w-full">
