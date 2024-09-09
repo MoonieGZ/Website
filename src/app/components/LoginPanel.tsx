@@ -29,7 +29,6 @@ export default function LoginPanel({ Destination }: { Destination: string }) {
       if (response.ok) {
         const data = await response.json()
         Cookies.set("token", data.token, { expires: 7 })
-        Cookies.set("username", username, { expires: 7 })
         router.push(Destination || "/")
       } else {
         setError("Invalid username or password")
