@@ -125,6 +125,7 @@ const InfoDialog = () => {
             <h3 className="font-semibold mb-2">Known Issues</h3>
             <ul className="list-disc pl-5 space-y-1">
               <li>Ordering by dex number is not possible.</li>
+              <li>Some Seasonal Formes are not populating correctly.</li>
               <li>There are Pokémon other than the Ralts lines displayed.</li>
             </ul>
           </section>
