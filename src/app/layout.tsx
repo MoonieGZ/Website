@@ -21,13 +21,6 @@ export const metadata: Metadata = {
     ],
     type: 'website',
   },
-  twitter: {
-    card: 'summary_large_image',
-    title: 'mnsy.dev',
-    description: 'Collection of misc tools by Moonsy',
-    creator: '@ilyMoonsy',
-    images: ['https://mnsy.dev/assets/icon.png'],
-  },
   themeColor: '#063f66'
 };
 
