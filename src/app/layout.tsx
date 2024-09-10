@@ -1,13 +1,34 @@
-import type { Metadata } from "next";
-import "./globals.css";
+import type { Metadata } from "next"
+import './globals.css'
 import Link from 'next/link'
 import { Inter } from 'next/font/google'
 import { MessageCircle, Music2, MoonStar, Video } from 'lucide-react'
 import PlausibleProvider from 'next-plausible'
 
 export const metadata: Metadata = {
-  title: "Moons' Tools",
-  description: "Collection of misc tools by Moonsy",
+  title: 'mnsy.dev',
+  description: 'Collection of misc tools by Moonsy',
+  openGraph: {
+    title: 'mnsy.dev',
+    description: 'Collection of misc tools by Moonsy',
+    images: [
+      {
+        url: '/assets/icon.png',
+        width: 512,
+        height: 512,
+        alt: 'mnsy.dev',
+      },
+    ],
+    type: 'website',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'mnsy.dev',
+    description: 'Collection of misc tools by Moonsy',
+    creator: '@ilyMoonsy',
+    images: ['/assets/icon.png'],
+  },
+  themeColor: '#063f66'
 };
 
 const inter = Inter({ subsets: ['latin'] })
