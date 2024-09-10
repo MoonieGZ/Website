@@ -13,7 +13,7 @@ export const metadata: Metadata = {
     description: 'Collection of misc tools by Moonsy',
     images: [
       {
-        url: '/assets/icon.png',
+        url: 'https://mnsy.dev/assets/icon.png',
         width: 512,
         height: 512,
         alt: 'mnsy.dev',
@@ -26,7 +26,7 @@ export const metadata: Metadata = {
     title: 'mnsy.dev',
     description: 'Collection of misc tools by Moonsy',
     creator: '@ilyMoonsy',
-    images: ['/assets/icon.png'],
+    images: ['https://mnsy.dev/assets/icon.png'],
   },
   themeColor: '#063f66'
 };
