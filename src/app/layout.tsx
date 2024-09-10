@@ -8,19 +8,6 @@ import PlausibleProvider from 'next-plausible'
 export const metadata: Metadata = {
   title: 'mnsy.dev',
   description: 'Collection of misc tools by Moonsy',
-  openGraph: {
-    title: 'mnsy.dev',
-    description: 'Collection of misc tools by Moonsy',
-    images: [
-      {
-        url: 'https://mnsy.dev/assets/icon.png',
-        width: 512,
-        height: 512,
-        alt: 'mnsy.dev',
-      },
-    ],
-    type: 'website',
-  },
   themeColor: '#063f66'
 };
 
