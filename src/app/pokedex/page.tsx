@@ -193,7 +193,7 @@ const SettingsDialog = ({ settings, onSettingsChange }: { settings: UserSettings
         <DialogHeader>
           <DialogTitle>
             <div className="flex items-center gap-2">
-            Pokédex Settings
+            Filter Settings
               <TooltipProvider>
                 <Tooltip>
                   <TooltipTrigger asChild>
@@ -208,27 +208,41 @@ const SettingsDialog = ({ settings, onSettingsChange }: { settings: UserSettings
           </DialogTitle>
         </DialogHeader>
         <div className="grid gap-4 py-4">
-          <SettingsSection
-            title="Natures"
-            items={Natures}
-            category="natures"
-            localSettings={localSettings}
-            handleCheckboxChange={handleCheckboxChange}
-          />
-          <SettingsSection
-            title="Berry Preferences"
-            items={BerryPreferences}
-            category="berryPreferences"
-            localSettings={localSettings}
-            handleCheckboxChange={handleCheckboxChange}
-          />
-          <SettingsSection
-            title="Pokémon Types"
-            items={PokemonTypes}
-            category="pokemonTypes"
-            localSettings={localSettings}
-            handleCheckboxChange={handleCheckboxChange}
-          />
+          <Accordion type="single" collapsible>
+            <AccordionItem value="item-1">
+              <AccordionTrigger>Natures</AccordionTrigger>
+              <AccordionContent>
+                <SettingsSection
+                  items={Natures}
+                  category="natures"
+                  localSettings={localSettings}
+                  handleCheckboxChange={handleCheckboxChange}
+                />
+              </AccordionContent>
+            </AccordionItem>
+            <AccordionItem value="item-2">
+              <AccordionTrigger>Berry Preferences</AccordionTrigger>
+              <AccordionContent>
+                <SettingsSection
+                  items={BerryPreferences}
+                  category="berryPreferences"
+                  localSettings={localSettings}
+                  handleCheckboxChange={handleCheckboxChange}
+                />
+              </AccordionContent>
+            </AccordionItem>
+            <AccordionItem value="item-3">
+              <AccordionTrigger>Pokémon Types</AccordionTrigger>
+              <AccordionContent>
+                <SettingsSection
+                  items={PokemonTypes}
+                  category="pokemonTypes"
+                  localSettings={localSettings}
+                  handleCheckboxChange={handleCheckboxChange}
+                />
+              </AccordionContent>
+            </AccordionItem>
+          </Accordion>
         </div>
         <div className="flex justify-between">
           <Button variant="outline" onClick={handleClearFilters}>Clear Filters</Button>
@@ -239,15 +253,13 @@ const SettingsDialog = ({ settings, onSettingsChange }: { settings: UserSettings
   )
 }
 
-const SettingsSection = ({ title, items, category, localSettings, handleCheckboxChange }: {
-  title: string,
+const SettingsSection = ({ items, category, localSettings, handleCheckboxChange }: {
   items: string[],
   category: keyof UserSettings,
   localSettings: UserSettings,
   handleCheckboxChange: (category: keyof UserSettings, item: string) => void
 }) => (
   <div className="grid gap-2">
-    <h3 className="font-semibold">{title}</h3>
     <div className="grid grid-cols-3 gap-2">
       {items.map(item => (
         <div key={item} className="flex items-center space-x-2">
