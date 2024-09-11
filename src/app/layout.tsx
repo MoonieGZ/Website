@@ -4,17 +4,42 @@ import Link from 'next/link'
 import { Inter } from 'next/font/google'
 import { MessageCircle, Music2, MoonStar, Video } from 'lucide-react'
 import PlausibleProvider from 'next-plausible'
+import {
+  NavigationMenu,
+  NavigationMenuContent,
+  NavigationMenuItem,
+  NavigationMenuList,
+  NavigationMenuTrigger,
+} from "@/components/ui/navigation-menu"
 
 export const metadata: Metadata = {
   title: 'mnsy.dev',
   description: 'Collection of misc tools by Moonsy',
-  themeColor: '#063f66'
 };
 
 const inter = Inter({ subsets: ['latin'] })
 const currentYear = new Date().getFullYear()
 
+function createMenuLink(href: string, title: string, description: string) {
+  return (
+    <li key={href}>
+      <Link href={href} className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-gray-700 hover:text-gray-300">
+        <div className="text-sm font-medium leading-none">{title}</div>
+        <p className="line-clamp-2 text-sm leading-snug text-gray-400">
+          {description}
+        </p>
+      </Link>
+    </li>
+  )
+}
+
+
 export default function RootLayout({ children }: { children: React.ReactNode }) {
+  const menuLinks = [
+    createMenuLink("/pokedex", "PokéDex", "Livedex viewer"),
+    createMenuLink("/melancalc", "Melanistic Calc", "Chances calculator"),
+  ]
+
   return (
     <PlausibleProvider domain="mnsy.dev" customDomain="https://staryu.pokefarm.com" selfHosted>
       <html lang="en" className="dark">
@@ -25,14 +50,30 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               <Link href="/" className="ml-4 text-xl font-bold">
                 Moons&apos; Tools
               </Link>
-              <div className="flex-grow"></div> {/* Filler space */}
-              <div className="space-x-4">
-                <Link href="/" className="hover:text-gray-300">Home</Link>
-                <Link href="/pokedex" className="hover:text-gray-300">PokéDex</Link>
-                <Link href="/about" className="hover:text-gray-300">About</Link>
-              </div>
+              <div className="flex-grow"></div>
+              <NavigationMenu>
+                <NavigationMenuList>
+                  <NavigationMenuItem>
+                    <Link href="/" className="text-gray-100 hover:text-gray-300 px-3 py-2">
+                      Home
+                    </Link>
+                  </NavigationMenuItem>
+                  <NavigationMenuItem>
+                    <NavigationMenuTrigger className="text-gray-100 hover:text-gray-300 bg-transparent">PFQ</NavigationMenuTrigger>
+                    <NavigationMenuContent>
+                      <ul className="grid w-[200px] gap-3 p-4 bg-gray-800 rounded-md">
+                        {menuLinks}
+                      </ul>
+                    </NavigationMenuContent>
+                  </NavigationMenuItem>
+                  <NavigationMenuItem>
+                    <Link href="/about" className="text-gray-100 hover:text-gray-300 px-3 py-2">
+                      About
+                    </Link>
+                  </NavigationMenuItem>
+                </NavigationMenuList>
+              </NavigationMenu>
             </div>
-
           </nav>
           <main className="flex-grow container mx-auto px-4 sm:px-6 lg:px-8 py-8">
             {children}
