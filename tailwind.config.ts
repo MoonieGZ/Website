@@ -1,11 +1,11 @@
-import type { Config } from "tailwindcss";
+import type {Config} from 'tailwindcss'
 
 const config: Config = {
-  darkMode: ["class"],
+  darkMode: ['class'],
   content: [
-    "./src/pages/**/*.{js,ts,jsx,tsx,mdx}",
-    "./src/components/**/*.{js,ts,jsx,tsx,mdx}",
-    "./src/app/**/*.{js,ts,jsx,tsx,mdx}",
+    './src/pages/**/*.{js,ts,jsx,tsx,mdx}',
+    './src/components/**/*.{js,ts,jsx,tsx,mdx}',
+    './src/app/**/*.{js,ts,jsx,tsx,mdx}',
   ],
   theme: {
   	extend: {
@@ -73,7 +73,7 @@ const config: Config = {
   					height: '0'
   				}
   			},
-            'caret-blink': {
+        'caret-blink': {
           		'0%,70%,100%': { opacity: '1' },
           		'20%,50%': { opacity: '0' },
         	},
@@ -81,10 +81,10 @@ const config: Config = {
   		animation: {
   			'accordion-down': 'accordion-down 0.2s ease-out',
   			'accordion-up': 'accordion-up 0.2s ease-out',
-			'caret-blink': 'caret-blink 1.25s ease-out infinite'
+        'caret-blink': 'caret-blink 1.25s ease-out infinite'
   		}
   	}
   },
-  plugins: [require("tailwindcss-animate")],
-};
-export default config;
+  plugins: [require('tailwindcss-animate')],
+}
+export default config
