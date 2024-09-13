@@ -17,7 +17,7 @@ export default function LoginPanel({Destination}: { Destination: string }) {
   const [isLoading, setIsLoading] = useState(false)
   const router = useRouter()
 
-  const API_URL = process.env.API_URL
+  const API_URL = process.env.API_URL || 'https://api.pokefarm.com'
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()

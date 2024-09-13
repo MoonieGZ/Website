@@ -1,6 +1,6 @@
 import {OwnedPokemon, Region, UserSettings} from './types'
 
-const apiUrl = process.env.API_URL || 'http://localhost:2138'
+const apiUrl = process.env.API_URL || 'https://api.pokefarm.com'
 
 export const fetchPokedexData = async (token: string, settings: UserSettings): Promise<Region[]> => {
   const url = new URL(`${apiUrl}/dex`)
