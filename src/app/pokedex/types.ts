@@ -1,13 +1,13 @@
 export type Pokemon = {
-    sprite: string
-    formeid: string
-    name: string
-    formename: string
+  sprite: string
+  formeid: string
+  name: string
+  formename: string
 }
 
 export type Region = {
-    region_name: string
-    pokemon: Pokemon[]
+  region_name: string
+  pokemon: Pokemon[]
 }
 
 export type OwnedPokemon = {
