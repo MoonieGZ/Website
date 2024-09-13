@@ -17,7 +17,13 @@ export type OwnedPokemon = {
 }
 
 export type UserSettings = {
-  natures: string[]
-  berryPreferences: string[]
-  pokemonTypes: string[]
-}
+  natures: string[];
+  berryPreferences: string[];
+  pokemonTypes: string[];
+  displaySettings: {
+    normal: 'all' | 'hideUnacquired' | 'showOnlyUnacquired';
+    shiny: 'all' | 'hideUnacquired' | 'showOnlyUnacquired';
+    albino: 'all' | 'hideUnacquired' | 'showOnlyUnacquired';
+    melanistic: 'all' | 'hideUnacquired' | 'showOnlyUnacquired';
+  };
+};

@@ -17,57 +17,59 @@ import {cleanFormeName, generateShortLink} from './strings'
 import Cookies from 'js-cookie'
 import Image from 'next/image'
 import Link from 'next/link'
+import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from '@/components/ui/select'
 
 const PokemonCard = ({pokemon, isHighlighted, ownedVariants}: {
   pokemon: Pokemon;
   isHighlighted: boolean;
   ownedVariants: { // noinspection JSUnusedLocalSymbols
-    [key: string]: number }
-}) => (
-  <Card
-    className={`mb-2 bg-gray-800 border-gray-700 transition-all duration-300 ${isHighlighted ? 'ring-2 ring-yellow-500 shadow-lg' : ''}`}>
-    {
-      <CardContent className="flex items-center justify-between p-2">
-        <Image
-          src={`/images/${pokemon.sprite}`}
-          alt={pokemon.name}
-          width={32}
-          height={32}
-        />
-        <div className="flex-1 text-left pl-2">
-          <span
-            className="text-base font-medium">{pokemon.name} {pokemon.formename && ` [${cleanFormeName(pokemon.formename)}]`}</span>
-        </div>
+    [key: string]: number };
+}) => {
+  return (
+    <Card
+      className={`mb-2 bg-gray-800 border-gray-700 transition-all duration-300 ${isHighlighted ? 'ring-2 ring-yellow-500 shadow-lg' : ''}`}>
+      {
+        <CardContent className="flex items-center justify-between p-2">
+          <Image
+            src={`/images/${pokemon.sprite}`}
+            alt={pokemon.name}
+            width={32}
+            height={32}
+          />
+          <div className="flex-1 text-left pl-2">
+            <span
+              className="text-base font-medium">{pokemon.name} {pokemon.formename && ` [${cleanFormeName(pokemon.formename)}]`}</span>
+          </div>
 
-        <div className="flex items-center space-x-2">
-          {Variants.map((variant) => (
-            ownedVariants[variant] ? (
-              <Link key={variant} href={`https://pokefarm.com/summary/${generateShortLink(ownedVariants[variant])}`}
-                target="_blank" rel="noopener noreferrer">
+          <div className="flex items-center space-x-2">
+            {Variants.map((variant) => (
+              ownedVariants[variant] ? (
+                <Link key={variant} href={`https://pokefarm.com/summary/${generateShortLink(ownedVariants[variant])}`}
+                  target="_blank" rel="noopener noreferrer">
+                  <Image
+                    src={`/assets/${variant === 'normal' ? 'pkmn' : variant}.png`}
+                    alt={variant.charAt(0).toUpperCase() + variant.slice(1)}
+                    width={16}
+                    height={16}
+                  />
+                </Link>
+              ) : (
                 <Image
+                  key={variant}
                   src={`/assets/${variant === 'normal' ? 'pkmn' : variant}.png`}
                   alt={variant.charAt(0).toUpperCase() + variant.slice(1)}
                   width={16}
                   height={16}
+                  className="grayscale opacity-35"
                 />
-              </Link>
-            ) : (
-              <Image
-                key={variant}
-                src={`/assets/${variant === 'normal' ? 'pkmn' : variant}.png`}
-                alt={variant.charAt(0).toUpperCase() + variant.slice(1)}
-                width={16}
-                height={16}
-                className="grayscale opacity-35"
-              />
-            )
-          ))}
-        </div>
-
-      </CardContent>
-    }
-  </Card>
-)
+              )
+            ))}
+          </div>
+        </CardContent>
+      }
+    </Card>
+  )
+}
 
 const clearCookiesAndReload = () => {
   Cookies.remove('token')
@@ -157,10 +159,12 @@ const SettingsDialog = ({settings, onSettingsChange}: {
   const handleCheckboxChange = (category: keyof UserSettings, item: string) => {
     setLocalSettings(prev => {
       const newSettings = {...prev}
-      if (newSettings[category].includes(item)) {
-        newSettings[category] = newSettings[category].filter(i => i !== item)
-      } else {
-        newSettings[category] = [...newSettings[category], item]
+      if(category !== 'displaySettings') {
+        if (newSettings[category].includes(item)) {
+          newSettings[category] = newSettings[category].filter(i => i !== item)
+        } else {
+          newSettings[category] = [...newSettings[category], item]
+        }
       }
 
       if (category === 'berryPreferences') {
@@ -180,6 +184,16 @@ const SettingsDialog = ({settings, onSettingsChange}: {
     })
   }
 
+  const handleDisplaySettingChange = (variant: keyof UserSettings['displaySettings'], value: 'all' | 'hideUnacquired' | 'showOnlyUnacquired') => {
+    setLocalSettings(prev => ({
+      ...prev,
+      displaySettings: {
+        ...prev.displaySettings,
+        [variant]: value
+      }
+    }))
+  }
+
   const handleSave = () => {
     onSettingsChange(localSettings)
     setOpen(false)
@@ -190,7 +204,13 @@ const SettingsDialog = ({settings, onSettingsChange}: {
     setLocalSettings({
       natures: [],
       berryPreferences: [],
-      pokemonTypes: []
+      pokemonTypes: [],
+      displaySettings: {
+        normal: 'all',
+        shiny: 'all',
+        albino: 'all',
+        melanistic: 'all'
+      }
     })
   }
 
@@ -254,6 +274,36 @@ const SettingsDialog = ({settings, onSettingsChange}: {
                 />
               </AccordionContent>
             </AccordionItem>
+            <AccordionItem value="item-4">
+              <AccordionTrigger>Ownership Status</AccordionTrigger>
+              <AccordionContent>
+                <div className="grid gap-4">
+                  {Variants.map((variant) => (
+                    <div key={variant} className="flex items-center space-x-2">
+                      <Image
+                        src={`/assets/${variant === 'normal' ? 'pkmn' : variant}.png`}
+                        alt={variant.charAt(0).toUpperCase() + variant.slice(1)}
+                        width={16}
+                        height={16}
+                      />
+                      <Select
+                        value={localSettings.displaySettings[variant as keyof UserSettings['displaySettings']]}
+                        onValueChange={(value) => handleDisplaySettingChange(variant as keyof UserSettings['displaySettings'], value as 'all' | 'hideUnacquired' | 'showOnlyUnacquired')}
+                      >
+                        <SelectTrigger className="w-full">
+                          <SelectValue placeholder="Select display option"/>
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="all">Show All</SelectItem>
+                          <SelectItem value="hideUnacquired">Show Owned Only</SelectItem>
+                          <SelectItem value="showOnlyUnacquired">Show Unowned Only</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  ))}
+                </div>
+              </AccordionContent>
+            </AccordionItem>
           </Accordion>
         </div>
         <div className="flex justify-between">
@@ -277,7 +327,7 @@ const SettingsSection = ({items, category, localSettings, handleCheckboxChange}:
         <div key={item} className="flex items-center space-x-2">
           <Checkbox
             id={`${category}-${item}`}
-            checked={localSettings[category].includes(item)}
+            checked={category !== 'displaySettings' && localSettings[category].includes(item)}
             onCheckedChange={() => handleCheckboxChange(category, item)}
           />
           <label htmlFor={`${category}-${item}`}>{item}</label>
@@ -288,20 +338,26 @@ const SettingsSection = ({items, category, localSettings, handleCheckboxChange}:
 )
 
 export default function Pokedex() {
+  const [settings, setSettings] = useState<UserSettings>(() => {
+    const savedSettings = Cookies.get('pokedex_settings')
+    return savedSettings ? JSON.parse(savedSettings) : {
+      natures: [],
+      berryPreferences: [],
+      pokemonTypes: [],
+      displaySettings: {
+        normal: 'all',
+        shiny: 'all',
+        albino: 'all',
+        melanistic: 'all'
+      }
+    }
+  })
   const [pokedexData, setPokedexData] = useState<Region[]>([])
   const [ownedPokemon, setOwnedPokemon] = useState<OwnedPokemon[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState('')
   const [searchTerm, setSearchTerm] = useState('')
   const [highlightedPokemon, setHighlightedPokemon] = useState<string | null>(null)
-  const [settings, setSettings] = useState<UserSettings>(() => {
-    const savedSettings = Cookies.get('pokedex_settings')
-    return savedSettings ? JSON.parse(savedSettings) : {
-      natures: [],
-      berryPreferences: [],
-      pokemonTypes: []
-    }
-  })
   const [isLogoutDialogOpen, setIsLogoutDialogOpen] = useState(false)
 
   const router = useRouter()
@@ -425,6 +481,20 @@ export default function Pokedex() {
     )
   }
 
+  const shouldDisplayPokemon = (ownedVariants: { [key: string]: number }) => {
+    return Variants.every(variant => {
+      const isOwned = !!ownedVariants[variant]
+      switch (settings.displaySettings[variant as keyof UserSettings['displaySettings']]) {
+      case 'hideUnacquired':
+        return isOwned
+      case 'showOnlyUnacquired':
+        return !isOwned
+      default:
+        return true
+      }
+    })
+  }
+
   return (
     <>
       <div className="flex justify-between items-center mb-6">
@@ -480,20 +550,26 @@ export default function Pokedex() {
             </AccordionTrigger>
             <AccordionContent>
               <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-4">
-                {region.pokemon.map((pokemon) => (
-                  <div
-                    key={pokemon.formeid}
-                    ref={el => {
-                      pokemonRefs.current[pokemon.formeid] = el
-                    }}
-                  >
-                    <PokemonCard
-                      pokemon={pokemon}
-                      isHighlighted={highlightedPokemon === pokemon.formeid}
-                      ownedVariants={getOwnedVariants(pokemon.formeid)}
-                    />
-                  </div>
-                ))}
+                {region.pokemon.map((pokemon) => {
+                  const ownedVariants = getOwnedVariants(pokemon.formeid)
+                  if (!shouldDisplayPokemon(ownedVariants)) {
+                    return null
+                  }
+                  return (
+                    <div
+                      key={pokemon.formeid}
+                      ref={el => {
+                        pokemonRefs.current[pokemon.formeid] = el
+                      }}
+                    >
+                      <PokemonCard
+                        pokemon={pokemon}
+                        isHighlighted={highlightedPokemon === pokemon.formeid}
+                        ownedVariants={ownedVariants}
+                      />
+                    </div>
+                  )
+                })}
               </div>
             </AccordionContent>
           </AccordionItem>
