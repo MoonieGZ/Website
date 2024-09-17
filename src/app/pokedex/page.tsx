@@ -136,9 +136,12 @@ const InfoDialog = () => {
             <h3 className="font-semibold mb-2">Known Issues</h3>
             <ul className="list-disc pl-5 space-y-1">
               <li>Ordering by dex number is not possible.</li>
-              <li>All seasonal formes are displaying when only the current season is possible.</li>
               <li>There are Pokémon other than the Ralts lines displayed.</li>
             </ul>
+          </section>
+          <section>
+            <h3 className="font-semibold mb-2">Disclaimer</h3>
+            <p>Permission to use PFQ sprites given by <Link className="text-blue-500" target="_blank" href="https://greegon.pokefarm.com/Shazi/sprite_permission/m/moonsy.png">Shazi</Link>.</p>
           </section>
         </div>
         <DialogFooter>
@@ -575,8 +578,12 @@ export default function Pokedex() {
           </AccordionItem>
         ))}
       </Accordion>
-      <div className="mt-8 text-xs text-muted-foreground">
-        <p>{getActiveFilters()}</p>
+      <div className="flex justify-between items-center mb-6">
+        <p className="mt-8 text-xs text-muted-foreground">{getActiveFilters()}</p>
+        <div className="flex-grow"></div>
+        <p className="mt-8 text-xs text-muted-foreground">Permission to use sprites given by&nbsp;
+          <Link className="text-blue-500" target="_blank" href="https://greegon.pokefarm.com/Shazi/sprite_permission/m/moonsy.png">Shazi</Link>.
+        </p>
       </div>
     </>
   )
