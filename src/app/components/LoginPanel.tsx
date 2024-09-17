@@ -35,7 +35,6 @@ export default function LoginPanel({Destination}: { Destination: string }) {
         router.push(Destination || '/')
       } else {
         const error = await response.json()
-        console.log(error)
         setError('Error: ' + error.message)
       }
     } catch (err) {
