@@ -35,6 +35,7 @@ export default function RootLayout({children}: { children: React.ReactNode }) {
   const menuLinks = [
     createMenuLink('/pokedex', 'PokéDex', 'Livedex viewer'),
     createMenuLink('/melancalc', 'Melanistic Calc', 'Chances calculator'),
+    createMenuLink('/staff', 'Staff Area', 'Tools for staff'),
   ]
 
   const devEnv = process.env.NODE_ENV === 'development'
