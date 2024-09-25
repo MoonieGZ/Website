@@ -2,11 +2,13 @@ import type {Metadata} from 'next'
 import './globals.css'
 import Link from 'next/link'
 import {Inter} from 'next/font/google'
-import {MessageCircle, MoonStar, Music2, Video} from 'lucide-react'
+import {Dot, MessageCircle, MoonStar, Music2, Video} from 'lucide-react'
 import PlausibleProvider from 'next-plausible'
-import {NavigationMenu, NavigationMenuContent, NavigationMenuItem, NavigationMenuList, NavigationMenuTrigger,} from '@/components/ui/navigation-menu'
 import React from 'react'
 import {Badge} from '@/components/ui/badge'
+import {Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbSeparator} from '@/components/ui/breadcrumb'
+import {DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger} from '@/components/ui/dropdown-menu'
+import {ChevronDownIcon} from '@radix-ui/react-icons'
 
 export const metadata: Metadata = {
   title: 'mnsy.dev',
@@ -16,29 +18,15 @@ export const metadata: Metadata = {
 const inter = Inter({subsets: ['latin']})
 const currentYear = new Date().getFullYear()
 
-function createMenuLink(href: string, title: string, description: string) {
-  return (
-    <li key={href}>
-      <Link href={href}
-        className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-gray-700 hover:text-gray-300">
-        <div className="text-sm font-medium leading-none">{title}</div>
-        <p className="line-clamp-2 text-sm leading-snug text-gray-400">
-          {description}
-        </p>
-      </Link>
-    </li>
-  )
-}
-
-
 export default function RootLayout({children}: { children: React.ReactNode }) {
-  const menuLinks = [
-    createMenuLink('/pokedex', 'PokéDex', 'Livedex viewer'),
-    createMenuLink('/melancalc', 'Melanistic Calc', 'Chances calculator'),
-    createMenuLink('/staff', 'Staff Area', 'Tools for staff'),
-  ]
-
   const devEnv = process.env.NODE_ENV === 'development'
+
+  const menuLinks = [
+    {href: '/pokedex', name: 'PokéDex', description: 'Livedex viewer'},
+    {href: '/market', name: 'Inventory Value', description: 'Market value calculator'},
+    {href: '/melancalc', name: 'Melanistic Calc', description: 'Chances calculator'},
+    {href: '/staff', name: 'Staff Area', description: 'Tools for staff'},
+  ]
 
   return (
     <PlausibleProvider domain="mnsy.dev" customDomain="https://staryu.pokefarm.com" selfHosted>
@@ -56,29 +44,37 @@ export default function RootLayout({children}: { children: React.ReactNode }) {
                 </Badge>
               )}
               <div className="flex-grow"></div>
-              <NavigationMenu>
-                <NavigationMenuList>
-                  <NavigationMenuItem>
-                    <Link href="/" className="text-gray-100 hover:text-gray-300 px-3 py-2">
-                      Home
-                    </Link>
-                  </NavigationMenuItem>
-                  <NavigationMenuItem>
-                    <NavigationMenuTrigger
-                      className="text-gray-100 hover:text-gray-300 bg-transparent">PFQ</NavigationMenuTrigger>
-                    <NavigationMenuContent>
-                      <ul className="grid w-[200px] gap-3 p-4 bg-gray-800 rounded-md">
-                        {menuLinks}
-                      </ul>
-                    </NavigationMenuContent>
-                  </NavigationMenuItem>
-                  <NavigationMenuItem>
-                    <Link href="/about" className="text-gray-100 hover:text-gray-300 px-3 py-2">
-                      About
-                    </Link>
-                  </NavigationMenuItem>
-                </NavigationMenuList>
-              </NavigationMenu>
+              <Breadcrumb>
+                <BreadcrumbList>
+                  <BreadcrumbItem>
+                    <BreadcrumbLink href="#">Home</BreadcrumbLink>
+                  </BreadcrumbItem>
+                  <BreadcrumbSeparator>
+                    <Dot />
+                  </BreadcrumbSeparator>
+                  <DropdownMenu>
+                    <DropdownMenuTrigger className="flex items-center gap-1">
+                      PFQ
+                      <ChevronDownIcon />
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="start">
+                      {menuLinks.map((item, index) => (
+                        <DropdownMenuItem key={index}>
+                          <Link href={item.href ? item.href : '#'}>
+                            {item.name}<br /><div className="text-xs">{item.description}</div>
+                          </Link>
+                        </DropdownMenuItem>
+                      ))}
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                  <BreadcrumbSeparator>
+                    <Dot />
+                  </BreadcrumbSeparator>
+                  <BreadcrumbItem>
+                    <BreadcrumbLink href="/privacy">Privacy & Cookies</BreadcrumbLink>
+                  </BreadcrumbItem>
+                </BreadcrumbList>
+              </Breadcrumb>
             </div>
           </nav>
           <main className="flex-grow container mx-auto px-4 sm:px-6 lg:px-8 py-8">
