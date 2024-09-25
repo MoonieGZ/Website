@@ -1,6 +1,6 @@
 'use client'
 
-import React, {useEffect, useState} from 'react'
+import React, {useEffect, useMemo, useState} from 'react'
 import {Table, TableBody, TableCell, TableHead, TableHeader, TableRow,} from '@/components/ui/table'
 import {ColumnDef, flexRender, getCoreRowModel, getSortedRowModel, SortingState, useReactTable,} from '@tanstack/react-table'
 import {InventoryItem} from '@/app/market/inventoryItem'
@@ -119,6 +119,14 @@ export default function InventoryTable() {
     },
   })
 
+  const inventorySummary = useMemo(() => {
+    const totalItems = data.reduce((sum, item) => sum + item.quantity, 0)
+    const totalValue = data.reduce((sum, item) => {
+      return sum + (item.price !== null ? item.price * item.quantity : 0)
+    }, 0)
+    return { totalItems, totalValue }
+  }, [data])
+
   if (isLoading) {
     return <div className="text-center">Loading Market data...</div>
   }
@@ -132,52 +140,58 @@ export default function InventoryTable() {
   }
 
   return (
-    <div className="rounded-md border">
-      <Table>
-        <TableHeader>
-          {table.getHeaderGroups().map((headerGroup) => (
-            <TableRow key={headerGroup.id}>
-              {headerGroup.headers.map((header) => (
-                <TableHead key={header.id} className="h-10">
-                  {header.isPlaceholder
-                    ? null
-                    : flexRender(
-                      header.column.columnDef.header,
-                      header.getContext()
-                    )}
-                </TableHead>
-              ))}
-            </TableRow>
-          ))}
-        </TableHeader>
-        <TableBody>
-          {table.getRowModel().rows?.length ? (
-            table.getRowModel().rows.map((row, index) => (
-              <TableRow
-                key={row.id}
-                data-state={row.getIsSelected() && 'selected'}
-                className={cn(
-                  'transition-colors',
-                  index % 2 === 0 ? 'bg-accent' : 'bg-auto',
-                  'hover:bg-gray-700'
-                )}
-              >
-                {row.getVisibleCells().map((cell) => (
-                  <TableCell key={cell.id}>
-                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                  </TableCell>
+    <div className="space-y-4">
+      <div className="rounded-md border">
+        <Table>
+          <TableHeader>
+            {table.getHeaderGroups().map((headerGroup) => (
+              <TableRow key={headerGroup.id}>
+                {headerGroup.headers.map((header) => (
+                  <TableHead key={header.id} className="h-10">
+                    {header.isPlaceholder
+                      ? null
+                      : flexRender(
+                        header.column.columnDef.header,
+                        header.getContext()
+                      )}
+                  </TableHead>
                 ))}
               </TableRow>
-            ))
-          ) : (
-            <TableRow>
-              <TableCell colSpan={columns.length} className="h-24 text-center">
-                No results.
-              </TableCell>
-            </TableRow>
-          )}
-        </TableBody>
-      </Table>
+            ))}
+          </TableHeader>
+          <TableBody>
+            {table.getRowModel().rows?.length ? (
+              table.getRowModel().rows.map((row, index) => (
+                <TableRow
+                  key={row.id}
+                  data-state={row.getIsSelected() && 'selected'}
+                  className={cn(
+                    'transition-colors',
+                    index % 2 === 0 ? 'bg-accent' : 'bg-auto',
+                    'hover:bg-gray-700'
+                  )}
+                >
+                  {row.getVisibleCells().map((cell) => (
+                    <TableCell key={cell.id}>
+                      {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                    </TableCell>
+                  ))}
+                </TableRow>
+              ))
+            ) : (
+              <TableRow>
+                <TableCell colSpan={columns.length} className="h-24 text-center">
+                  No results.
+                </TableCell>
+              </TableRow>
+            )}
+          </TableBody>
+        </Table>
+      </div>
+      <div className="flex justify-between items-center">
+        <p className="text-xs text-muted-foreground">Your inventory of {inventorySummary.totalItems.toLocaleString()} items
+          is worth {inventorySummary.totalValue.toLocaleString()} Credits, as per current market listings.</p>
+      </div>
     </div>
   )
 }
